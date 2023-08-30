@@ -1,0 +1,111 @@
+<html>
+  <header>
+    <title>Noppapeli</title>
+  </header>
+
+  <style>
+    body {
+      margin-left: 46%;
+      margin-top: 20%;
+    }
+
+    #diceImage {
+      size: 50cm;
+      margin-top: 3%;
+    }
+
+    #throwDice {
+      margin-left: 6mm;
+      text-align: center;
+      color: white;
+      border: none;
+      background-color: #077852;
+      padding: 10px;
+      border-radius: 1cm;
+      box-shadow: 1px 1px inset #000000;
+    }
+
+    #throwDice:hover {
+      color:rgb(152, 226, 15);
+      background-color:rgb(22, 37, 37);
+    }
+  </style>
+
+  <body>
+    <button id="throwDice" onclick="throwDice()">Heitä noppaa</button>
+    <br/>
+    <img src="diceModels/1.png" alt="Dice image" width="150" height="150" id="diceImage">
+
+    <script>
+
+      let playing = false;
+      let currentAudio;
+
+      const sleep = async(ms) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+
+      const updateImage = (newImg) => {
+        document.getElementById("diceImage").src = "diceModels/" + newImg + ".png";
+      }
+
+      const playAudio = (name) => { 
+        currentAudio = new Audio('sounds/' + name);
+        currentAudio.play();
+      }
+
+      const diceAnim = async() => {
+        for (let j = 0; j < 15; j++) {
+          for (let i = 1; i < 7; i++) {
+          await sleep(100);
+          updateImage(i);
+          }
+        }
+
+        let randomNum = Math.floor(Math.random() * 5) + 1;
+        updateImage(randomNum);
+        currentAudio.pause();
+        playing = false;
+        
+        if (randomNum <= 3) {
+          playAudio("sad.mp3");
+        } else if (randomNum > 3) {
+          playAudio("lottery.mp3");
+        }
+      }
+
+
+      const game = async() => {
+        await sleep(1000);
+        playAudio("threetwoone.mp3");
+        await sleep(3300);
+        playAudio("music.mp3");
+        setTimeout(() => { diceAnim(); }, 0);
+      }
+
+      const gameStart = async() => {
+        playAudio("gameMachine.mp3");
+
+        playing = true;
+        let diceData = document.getElementById("throwDice");
+        let ogColor = diceData.style.backgroundColor;
+        
+        for (let i = 0; i < 6; i++) {
+          await sleep(100);
+          diceData.style.backgroundColor = "#FF0000";
+          await sleep(100);
+          diceData.style.backgroundColor = "#00FFFF";
+        }
+
+        diceData.style.backgroundColor = ogColor;
+        game();
+      }
+
+      const throwDice = async() => {
+        if (playing) return;
+        
+        setTimeout(() => { gameStart(); }, 0);
+      }
+    </script>
+  </body>
+</html>
